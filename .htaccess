@@ -1,0 +1,11 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Bloquer l'accès direct aux dossiers sensibles
+RewriteRule ^(app|config|core)(/|$) - [F,L]
+
+# Rediriger tout vers index.php sauf les assets existants
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
