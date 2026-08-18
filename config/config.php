@@ -4,7 +4,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'mon projet');
+define('DB_NAME', 'cahierdetexte');
 
 // ===== APPLICATION =====
 define('APP_NAME', 'Cahier de Texte');

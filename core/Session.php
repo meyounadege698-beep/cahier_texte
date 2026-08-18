@@ -23,13 +23,14 @@ class Session
 
     /**
      * Stocke l'utilisateur en session après connexion.
-     * Basé sur la table utilisateur : id_utilisateur, nom, email, role
+     * Colonnes BDD : id_utilisateur, nom, prenom, email, role, est_actif
      */
     public static function setUser(array $user): void
     {
         session_regenerate_id(true); // Prévention fixation de session
         $_SESSION['user_id']   = $user['id_utilisateur'];
         $_SESSION['nom']       = $user['nom'];
+        $_SESSION['prenom']    = $user['prenom'] ?? '';
         $_SESSION['email']     = $user['email'];
         $_SESSION['role']      = $user['role'];
         $_SESSION['logged_in'] = true;

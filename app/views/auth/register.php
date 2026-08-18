@@ -10,48 +10,48 @@
 
 <div class="auth-container auth-container--wide">
 
-    <!-- En-tête -->
     <div class="auth-header">
         <span class="auth-icon">📝</span>
         <h1>Créer un compte</h1>
         <p>Rejoignez <?= APP_NAME ?> dès maintenant</p>
     </div>
 
-    <!-- Messages flash -->
     <?= Session::getFlash() ?>
 
-    <!-- Formulaire -->
     <form method="POST" action="<?= APP_URL ?>/?page=register" novalidate>
 
-        <!-- CSRF -->
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 
-        <!-- Nom complet -->
-        <div class="form-group">
-            <label for="nom">Nom complet <span class="required">*</span></label>
-            <input
-                type="text"
-                id="nom"
-                name="nom"
-                placeholder="Ex : Jean Dupont"
-                value="<?= htmlspecialchars($old['nom'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                required
-                minlength="2"
-                autocomplete="name"
-            >
+        <!-- Nom + Prénom côte à côte -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="nom">Nom <span class="required">*</span></label>
+                <input
+                    type="text" id="nom" name="nom"
+                    placeholder="Ex : Dupont"
+                    value="<?= htmlspecialchars($old['nom'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    required minlength="2" autocomplete="family-name"
+                >
+            </div>
+            <div class="form-group">
+                <label for="prenom">Prénom <span class="required">*</span></label>
+                <input
+                    type="text" id="prenom" name="prenom"
+                    placeholder="Ex : Jean"
+                    value="<?= htmlspecialchars($old['prenom'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    required minlength="2" autocomplete="given-name"
+                >
+            </div>
         </div>
 
         <!-- Email -->
         <div class="form-group">
             <label for="email">Adresse email <span class="required">*</span></label>
             <input
-                type="email"
-                id="email"
-                name="email"
+                type="email" id="email" name="email"
                 placeholder="exemple@email.com"
                 value="<?= htmlspecialchars($old['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                required
-                autocomplete="email"
+                required autocomplete="email"
             >
         </div>
 
@@ -60,17 +60,13 @@
             <label for="password">Mot de passe <span class="required">*</span></label>
             <div class="input-wrapper">
                 <input
-                    type="password"
-                    id="password"
-                    name="password"
+                    type="password" id="password" name="password"
                     placeholder="Minimum 8 caractères"
-                    required
-                    minlength="8"
-                    autocomplete="new-password"
+                    required minlength="8" autocomplete="new-password"
                 >
-                <button type="button" class="toggle-pwd" onclick="togglePassword('password', this)" aria-label="Afficher/masquer">
-                    👁️
-                </button>
+                <button type="button" class="toggle-pwd"
+                        onclick="togglePassword('password', this)"
+                        aria-label="Afficher/masquer">👁️</button>
             </div>
         </div>
 
@@ -79,26 +75,27 @@
             <label for="confirm_password">Confirmer le mot de passe <span class="required">*</span></label>
             <div class="input-wrapper">
                 <input
-                    type="password"
-                    id="confirm_password"
-                    name="confirm_password"
+                    type="password" id="confirm_password" name="confirm_password"
                     placeholder="Répétez votre mot de passe"
-                    required
-                    autocomplete="new-password"
+                    required autocomplete="new-password"
                 >
-                <button type="button" class="toggle-pwd" onclick="togglePassword('confirm_password', this)" aria-label="Afficher/masquer">
-                    👁️
-                </button>
+                <button type="button" class="toggle-pwd"
+                        onclick="togglePassword('confirm_password', this)"
+                        aria-label="Afficher/masquer">👁️</button>
             </div>
         </div>
 
-        <!-- Rôle -->
+        <!-- Rôle — synchronisé avec ENUM BDD (enseignant, censeur, administrateur) -->
         <div class="form-group">
             <label for="role">Type de compte <span class="required">*</span></label>
             <select id="role" name="role" required>
                 <option value="">— Choisir votre profil —</option>
                 <?php
-                $roles = ['eleve' => 'Élève', 'enseignant' => 'Enseignant', 'parent' => 'Parent / Tuteur', 'administrateur' => 'Administrateur'];
+                $roles = [
+                    'enseignant'     => 'Enseignant',
+                    'censeur'        => 'Censeur',
+                    'administrateur' => 'Administrateur',
+                ];
                 foreach ($roles as $val => $label):
                     $selected = (($old['role'] ?? '') === $val) ? 'selected' : '';
                 ?>

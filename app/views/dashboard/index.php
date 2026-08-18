@@ -9,16 +9,17 @@ include APP_ROOT . '/app/views/layouts/header.php';
 <!-- Bannière de bienvenue -->
 <div class="welcome-banner">
     <div class="welcome-text">
-        <h2>Bienvenue, <?= htmlspecialchars($user['nom'], ENT_QUOTES, 'UTF-8') ?> 👋</h2>
+        <h2>Bienvenue, <?= htmlspecialchars($user['prenom'] ?: $user['nom'], ENT_QUOTES, 'UTF-8') ?> 👋</h2>
         <p>Vous êtes connecté à votre espace <strong><?= APP_NAME ?></strong>.</p>
     </div>
     <div class="welcome-avatar">
         <?php
         $roleIcons = [
-            'enseignant'     => '👨‍🏫',
-            'eleve'          => '🎓',
-            'parent'         => '👨‍👩‍👧',
-            'administrateur' => '⚙️',
+            'enseignant'          => '👨‍🏫',
+            'eleve'               => '🎓',
+            'parent'              => '👨‍👩‍👧',
+            'administrateur'      => '⚙️',
+            'censeur'             => '🔍',
         ];
         echo $roleIcons[$user['role']] ?? '👤';
         ?>
@@ -40,7 +41,7 @@ include APP_ROOT . '/app/views/layouts/header.php';
         <ul class="info-list">
             <li>
                 <span class="info-label">📛 Nom</span>
-                <span class="info-value"><?= htmlspecialchars($user['nom'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="info-value"><?= htmlspecialchars($user['nom'] . ' ' . $user['prenom'], ENT_QUOTES, 'UTF-8') ?></span>
             </li>
             <li>
                 <span class="info-label">✉️ Email</span>
@@ -82,6 +83,14 @@ include APP_ROOT . '/app/views/layouts/header.php';
             <li>
                 <span class="info-label">🕐 Heure</span>
                 <span class="info-value"><?= date('H:i') ?></span>
+            </li>
+            <li>
+                <span class="info-label">🔗 Dernière connexion</span>
+                <span class="info-value">
+                    <?= $user['derniere_connexion']
+                        ? date('d/m/Y à H:i', strtotime($user['derniere_connexion']))
+                        : 'Première connexion' ?>
+                </span>
             </li>
             <li>
                 <span class="info-label">✅ Statut</span>

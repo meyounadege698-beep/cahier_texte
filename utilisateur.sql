@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
     `nom`              VARCHAR(100) NOT NULL,
     `email`            VARCHAR(150) NOT NULL,
     `mot_de_passe_hash` VARCHAR(255) NOT NULL,
-    `role`             ENUM('eleve', 'enseignant', 'parent', 'administrateur')
+    `role`             ENUM('eleve', 'enseignant', 'parent', 'censeur', 'administrateur')
                                     NOT NULL DEFAULT 'eleve',
     `date_inscription` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_utilisateur`),
