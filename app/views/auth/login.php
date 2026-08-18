@@ -21,7 +21,7 @@
     <?= Session::getFlash() ?>
 
     <!-- Formulaire -->
-    <form method="POST" action="<?= APP_URL ?>/?page=login" novalidate>
+    <form method="POST" action="<?= APP_URL ?>/app.php?page=login" novalidate>
 
         <!-- CSRF -->
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
@@ -77,7 +77,7 @@
     </form>
 
     <div class="auth-footer">
-        <p>Pas encore de compte ? <a href="<?= APP_URL ?>/?page=register">Créer un compte</a></p>
+        <p>Pas encore de compte ? <a href="<?= APP_URL ?>/app.php?page=register">Créer un compte</a></p>
     </div>
 
 </div>

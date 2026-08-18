@@ -1,47 +1,41 @@
 <?php
 
 /**
- * index.php — Point d'entrée unique (Front Controller)
+ * app.php — Front Controller MVC
  *
- * Toutes les requêtes passent par ici.
- * URL : http://localhost/cahier_texte/?page=login
- *       http://localhost/cahier_texte/?page=register
- *       http://localhost/cahier_texte/?page=dashboard
- *       http://localhost/cahier_texte/?page=logout
+ * Toutes les routes applicatives passent ici.
+ *   http://localhost/cahier_texte/app.php?page=login
+ *   http://localhost/cahier_texte/app.php?page=register
+ *   http://localhost/cahier_texte/app.php?page=dashboard
+ *   http://localhost/cahier_texte/app.php?page=logout
+ *
+ * Page d'accueil visiteur → index.php (racine)
  */
 
-// ===== CHARGEMENT DE LA CONFIGURATION =====
 require_once __DIR__ . '/config/config.php';
-
-// ===== CHARGEMENT DU CORE =====
 require_once __DIR__ . '/core/Database.php';
 require_once __DIR__ . '/core/Session.php';
 require_once __DIR__ . '/core/Router.php';
 
-// ===== DÉMARRAGE DE LA SESSION =====
 Session::start();
 
-// ===== ROUTEUR =====
 $router = new Router();
 
-// Page d'accueil
-$router->add('home',      'HomeController', 'index');
-
 // Authentification
-$router->add('login',    'AuthController', 'loginForm');
-$router->add('do-login', 'AuthController', 'login');       // POST login
-$router->add('register', 'AuthController', 'registerForm');
-$router->add('do-register', 'AuthController', 'register'); // POST register
-$router->add('logout',   'AuthController', 'logout');
+$router->add('login',       'AuthController', 'loginForm');
+$router->add('do-login',    'AuthController', 'login');
+$router->add('register',    'AuthController', 'registerForm');
+$router->add('do-register', 'AuthController', 'register');
+$router->add('logout',      'AuthController', 'logout');
 
-// Dashboard (page principale)
-$router->add('dashboard', 'DashboardController', 'index');
+// Application
+$router->add('dashboard',   'DashboardController', 'index');
 
 // ===== DISPATCH =====
-// Point d'entrée par défaut : toujours la page d'accueil publique
-$page = $_GET['page'] ?? 'home';
+$page = $_GET['page'] ?? (Session::isLoggedIn() ? 'dashboard' : 'login');
 
-if ($page === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+// Rerouter les POST vers les handlers dédiés
+if ($page === 'login'    && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-login';
 } elseif ($page === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-register';
