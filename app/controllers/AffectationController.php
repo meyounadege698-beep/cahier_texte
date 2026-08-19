@@ -88,10 +88,9 @@ class AffectationController
         if ($idEns <= 0 || empty($annee)) {
             Session::setFlash('error', 'Paramètres invalides.');
             $this->redirectEns($idEns, $annee);
+            // redirectEns() appelle exit(), donc on n'atteint jamais ici
         }
 
-        // Reconstruire les lignes depuis les tableaux POST
-        // Format POST : id_classe[], id_matiere[], id_salle[], volume[], principal[]
         $idClasses  = $_POST['id_classe']   ?? [];
         $idMatieres = $_POST['id_matiere']  ?? [];
         $idSalles   = $_POST['id_salle']    ?? [];
@@ -101,6 +100,7 @@ class AffectationController
         if (empty($idClasses) || empty($idMatieres)) {
             Session::setFlash('error', 'Ajoutez au moins une ligne classe + matière.');
             $this->redirectEns($idEns, $annee);
+            // redirectEns() appelle exit()
         }
 
         $lignes = [];

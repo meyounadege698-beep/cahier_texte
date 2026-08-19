@@ -101,17 +101,34 @@ class PresenceModel
 
     public function getSeancesForAppel(int $idEnseignant, int $idClasse): array
     {
-        $stmt = $this->db->prepare(
-            "SELECT s.id_seance, s.date_seance, s.heure_debut, s.heure_fin,
-                    s.contenu_traite, m.nom_matiere,
-                    (SELECT COUNT(*) FROM presence p WHERE p.id_seance = s.id_seance) AS nb_appels
-             FROM seance s
-             JOIN matiere m ON s.id_matiere = m.id_matiere
-             WHERE s.id_utilisateur = ? AND s.id_classe = ? AND s.statut = 'REALISEE'
-             ORDER BY s.date_seance DESC, s.heure_debut DESC
-             LIMIT 20"
-        );
-        $stmt->bind_param("ii", $idEnseignant, $idClasse);
+        // Si idEnseignant = 0 (censeur), retourner toutes les séances de la classe
+        if ($idEnseignant === 0) {
+            $stmt = $this->db->prepare(
+                "SELECT s.id_seance, s.date_seance, s.heure_debut, s.heure_fin,
+                        s.contenu_traite, m.nom_matiere,
+                        CONCAT(u.nom,' ',u.prenom) AS nom_enseignant,
+                        (SELECT COUNT(*) FROM presence p WHERE p.id_seance = s.id_seance) AS nb_appels
+                 FROM seance s
+                 JOIN matiere m     ON s.id_matiere     = m.id_matiere
+                 JOIN utilisateur u ON s.id_utilisateur = u.id_utilisateur
+                 WHERE s.id_classe = ? AND s.statut = 'REALISEE'
+                 ORDER BY s.date_seance DESC, s.heure_debut DESC
+                 LIMIT 30"
+            );
+            $stmt->bind_param("i", $idClasse);
+        } else {
+            $stmt = $this->db->prepare(
+                "SELECT s.id_seance, s.date_seance, s.heure_debut, s.heure_fin,
+                        s.contenu_traite, m.nom_matiere,
+                        (SELECT COUNT(*) FROM presence p WHERE p.id_seance = s.id_seance) AS nb_appels
+                 FROM seance s
+                 JOIN matiere m ON s.id_matiere = m.id_matiere
+                 WHERE s.id_utilisateur = ? AND s.id_classe = ? AND s.statut = 'REALISEE'
+                 ORDER BY s.date_seance DESC, s.heure_debut DESC
+                 LIMIT 20"
+            );
+            $stmt->bind_param("ii", $idEnseignant, $idClasse);
+        }
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

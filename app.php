@@ -84,7 +84,6 @@ $router->add('do-affecter-multiple',  'AffectationController', 'affecterMultiple
 $router->add('do-add-salle',          'AffectationController', 'addSalle');
 $router->add('do-edit-salle',         'AffectationController', 'editSalle');
 $router->add('do-delete-salle',       'AffectationController', 'deleteSalle');
-$router->add('do-add-aff',            'AffectationController', 'addAffectation');
 $router->add('do-edit-aff',           'AffectationController', 'editAffectation');
 $router->add('do-delete-aff',         'AffectationController', 'deleteAffectation');
 
@@ -150,7 +149,6 @@ if ($page === 'login'    && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'add_salle')         $_GET['page'] = 'do-add-salle';
     if ($action === 'edit_salle')        $_GET['page'] = 'do-edit-salle';
     if ($action === 'delete_salle')      $_GET['page'] = 'do-delete-salle';
-    if ($action === 'add_aff')           $_GET['page'] = 'do-add-aff';
     if ($action === 'edit_aff')          $_GET['page'] = 'do-edit-aff';
     if ($action === 'delete_aff')        $_GET['page'] = 'do-delete-aff';
     if ($action === 'affecter_multiple') $_GET['page'] = 'do-affecter-multiple';

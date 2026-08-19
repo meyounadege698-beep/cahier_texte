@@ -2,7 +2,11 @@
 
 /**
  * AffectationModel — Salles + affectations enseignants.
- * Supporte les affectations multiples (plusieurs matières, salles, départements).
+ *
+ * IMPORTANT : Exécuter migration_affectations_v2.sql avant d'utiliser
+ * les méthodes qui font référence à id_departement dans affectation_enseignant.
+ * Si la migration n'est pas encore appliquée, addAffectation() fonctionne
+ * sans id_departement (colonne ignorée).
  */
 class AffectationModel
 {
@@ -108,10 +112,17 @@ class AffectationModel
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    /**
+     * Retourne les matières indexables par id_departement (clé dept_id ET id_departement).
+     * La clé 'dept_id' est utilisée dans le JS (MATIERES_BY_DEPT[dept_id]).
+     */
     public function getAllMatieres(): array
     {
         $result = $this->db->query(
-            "SELECT m.*, d.nom_departement, d.code_departement, d.id_departement AS dept_id
+            "SELECT m.*,
+                    d.nom_departement,
+                    d.code_departement,
+                    d.id_departement AS dept_id
              FROM matiere m
              JOIN departement d ON m.id_departement = d.id_departement
              ORDER BY d.nom_departement, m.nom_matiere"
@@ -153,6 +164,7 @@ class AffectationModel
 
     /**
      * Toutes les affectations d'une année, groupées par enseignant.
+     * JOIN département via matière (ne dépend pas de la migration v2).
      */
     public function getAffectationsByAnnee(string $annee): array
     {
@@ -190,10 +202,10 @@ class AffectationModel
                 d.nom_departement, d.code_departement,
                 s.nom_salle
              FROM affectation_enseignant ae
-             JOIN classe c      ON ae.id_classe  = c.id_classe
-             JOIN matiere m     ON ae.id_matiere = m.id_matiere
-             JOIN departement d ON m.id_departement = d.id_departement
-             LEFT JOIN salle s  ON ae.id_salle   = s.id_salle
+             JOIN classe c      ON ae.id_classe      = c.id_classe
+             JOIN matiere m     ON ae.id_matiere     = m.id_matiere
+             JOIN departement d ON m.id_departement  = d.id_departement
+             LEFT JOIN salle s  ON ae.id_salle       = s.id_salle
              WHERE ae.id_utilisateur = ? AND ae.annee_scolaire = ?
              ORDER BY d.nom_departement, m.nom_matiere, c.nom_classe"
         );
@@ -207,28 +219,57 @@ class AffectationModel
     // =========================================================
 
     /**
-     * Crée UNE affectation (classe + matière + salle optionnelle).
+     * Crée UNE affectation.
+     * Compatible avec et sans la migration_affectations_v2.sql.
+     * Si la colonne id_departement existe, elle est remplie automatiquement.
      */
     public function addAffectation(int $idEns, int $idClasse, int $idMatiere,
                                     string $annee, ?int $idSalle,
                                     ?int $volHoraire, int $principal): int
     {
-        $stmt = $this->db->prepare(
-            "INSERT INTO affectation_enseignant
-             (id_utilisateur, id_classe, id_matiere, annee_scolaire,
-              id_salle, volume_horaire_hebdo, est_principal, date_affectation)
-             VALUES (?,?,?,?,?,?,?,CURDATE())"
-        );
-        $stmt->bind_param("iiisiii", $idEns, $idClasse, $idMatiere,
-                          $annee, $idSalle, $volHoraire, $principal);
+        // Vérifier si la colonne id_departement existe
+        $hasDeptCol = $this->columnExists('affectation_enseignant', 'id_departement');
+
+        if ($hasDeptCol) {
+            // Récupérer id_departement depuis la matière
+            $stmt = $this->db->prepare(
+                "SELECT id_departement FROM matiere WHERE id_matiere = ?"
+            );
+            $stmt->bind_param("i", $idMatiere);
+            $stmt->execute();
+            $row    = $stmt->get_result()->fetch_assoc();
+            $idDept = $row ? (int)$row['id_departement'] : null;
+            $stmt->close();
+
+            $stmt = $this->db->prepare(
+                "INSERT INTO affectation_enseignant
+                 (id_utilisateur, id_classe, id_matiere, id_departement,
+                  annee_scolaire, id_salle, volume_horaire_hebdo, est_principal, date_affectation)
+                 VALUES (?,?,?,?,?,?,?,?,CURDATE())"
+            );
+            $stmt->bind_param("iiisisiii", $idEns, $idClasse, $idMatiere, $idDept,
+                              $annee, $idSalle, $volHoraire, $principal);
+        } else {
+            // Sans colonne id_departement (migration non encore appliquée)
+            $stmt = $this->db->prepare(
+                "INSERT INTO affectation_enseignant
+                 (id_utilisateur, id_classe, id_matiere,
+                  annee_scolaire, id_salle, volume_horaire_hebdo, est_principal, date_affectation)
+                 VALUES (?,?,?,?,?,?,?,CURDATE())"
+            );
+            $stmt->bind_param("iiisiii", $idEns, $idClasse, $idMatiere,
+                              $annee, $idSalle, $volHoraire, $principal);
+        }
+
         $stmt->execute();
-        return (int)$this->db->insert_id;
+        $id = (int)$this->db->insert_id;
+        $stmt->close();
+        return $id;
     }
 
     /**
      * Crée PLUSIEURS affectations en une transaction.
-     * $lignes = [[id_classe, id_matiere, id_salle|null, vol_horaire|null, est_principal], ...]
-     * Retourne [created => int, skipped => int]
+     * Retourne ['created' => int, 'skipped' => int]
      */
     public function addAffectationsMultiples(int $idEns, string $annee,
                                               array $lignes): array
@@ -239,15 +280,14 @@ class AffectationModel
         $this->db->begin_transaction();
         try {
             foreach ($lignes as $l) {
-                $idClasse  = (int)$l['id_classe'];
-                $idMatiere = (int)$l['id_matiere'];
-                $idSalle   = isset($l['id_salle']) && $l['id_salle'] ? (int)$l['id_salle'] : null;
-                $vol       = isset($l['volume']) && $l['volume'] ? (int)$l['volume'] : null;
-                $principal = isset($l['principal']) ? 1 : 0;
+                $idClasse  = (int)($l['id_classe']  ?? 0);
+                $idMatiere = (int)($l['id_matiere'] ?? 0);
+                $idSalle   = !empty($l['id_salle'])  ? (int)$l['id_salle']  : null;
+                $vol       = !empty($l['volume'])    ? (int)$l['volume']    : null;
+                $principal = !empty($l['principal']) ? 1 : 0;
 
                 if ($idClasse <= 0 || $idMatiere <= 0) { $skipped++; continue; }
 
-                // Vérifier doublon
                 if ($this->affectationExists($idEns, $idClasse, $idMatiere, $annee)) {
                     $skipped++; continue;
                 }
@@ -297,6 +337,27 @@ class AffectationModel
                AND annee_scolaire=? AND id_affectation!=?"
         );
         $stmt->bind_param("iiisi", $idEns, $idClasse, $idMat, $annee, $excludeId);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+
+    // =========================================================
+    //  UTILITAIRE
+    // =========================================================
+
+    /**
+     * Vérifie si une colonne existe dans une table.
+     * Utilisé pour compatibilité avec/sans migration v2.
+     */
+    private function columnExists(string $table, string $column): bool
+    {
+        $dbName = DB_NAME;
+        $stmt   = $this->db->prepare(
+            "SELECT 1 FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?"
+        );
+        $stmt->bind_param("sss", $dbName, $table, $column);
         $stmt->execute();
         $stmt->store_result();
         return $stmt->num_rows > 0;

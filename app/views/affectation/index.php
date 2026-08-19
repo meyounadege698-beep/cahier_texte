@@ -110,8 +110,8 @@ $typesLabels = ['classe'=>'Salle de classe','laboratoire'=>'Laboratoire',
         </h2>
         <button class="btn btn-primary btn-sm"
                 onclick="toggleModal('modal-add-aff')"
-                <?= empty($enseignants) || empty($classes) || empty($matieres) ? 'disabled' : '' ?>>
-            ＋ Nouvelle affectation
+                <?= empty($enseignants) ? 'disabled title="Aucun enseignant disponible"' : '' ?>>
+            ＋ Affecter un enseignant
         </button>
     </div>
 
@@ -272,96 +272,34 @@ $typesLabels = ['classe'=>'Salle de classe','laboratoire'=>'Laboratoire',
 </div>
 
 <!-- ============================================================
-     MODAL NOUVELLE AFFECTATION
+     MODAL NOUVELLE AFFECTATION — redirige vers la page dédiée
 ============================================================ -->
 <div class="modal-overlay" id="modal-add-aff" style="display:none">
-    <div class="modal modal--large">
+    <div class="modal">
         <div class="modal-header">
-            <h3>👨‍🏫 Nouvelle affectation</h3>
+            <h3>👨‍🏫 Affecter un enseignant</h3>
             <button class="modal-close" onclick="toggleModal('modal-add-aff')">✕</button>
         </div>
-        <form method="POST" action="<?= APP_URL ?>/app.php?page=gestion-affectations">
-            <input type="hidden" name="csrf_token"  value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
-            <input type="hidden" name="form_action" value="add_aff">
-
-            <div class="form-group"><label>Enseignant <span class="required">*</span></label>
-                <select name="id_utilisateur" required>
-                    <option value="">— Sélectionner un enseignant —</option>
-                    <?php foreach ($enseignants as $e): ?>
-                        <option value="<?= (int)$e['id_utilisateur'] ?>">
-                            <?= htmlspecialchars($e['nom'] . ' ' . $e['prenom']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select></div>
-
-            <div class="form-group"><label>Classe <span class="required">*</span></label>
-                <select name="id_classe" required>
-                    <option value="">— Sélectionner une classe —</option>
-                    <?php foreach ($classes as $cl): ?>
-                        <option value="<?= (int)$cl['id_classe'] ?>">
-                            <?= htmlspecialchars($cl['nom_classe'] . ' — ' . $cl['niveau']) ?>
-                            <?php if ($cl['filiere']): ?>
-                                (<?= htmlspecialchars($cl['filiere']) ?>)
-                            <?php endif; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select></div>
-
-            <div class="form-group"><label>Matière <span class="required">*</span></label>
-                <select name="id_matiere" required>
-                    <option value="">— Sélectionner une matière —</option>
-                    <?php
-                    $deptCourant = '';
-                    foreach ($matieres as $m):
-                        if ($m['nom_departement'] !== $deptCourant) {
-                            if ($deptCourant) echo '</optgroup>';
-                            echo '<optgroup label="' . htmlspecialchars($m['nom_departement']) . '">';
-                            $deptCourant = $m['nom_departement'];
-                        }
-                    ?>
-                        <option value="<?= (int)$m['id_matiere'] ?>">
-                            <?= htmlspecialchars($m['nom_matiere']) ?>
-                            (Coef. <?= $m['coefficient'] ?>)
-                        </option>
-                    <?php endforeach; if ($deptCourant) echo '</optgroup>'; ?>
-                </select></div>
-
-            <div class="form-row">
-                <div class="form-group"><label>Salle habituelle <span class="optional">(optionnel)</span></label>
-                    <select name="id_salle">
-                        <option value="">— Aucune salle fixe —</option>
-                        <?php foreach ($salles as $s): if (!$s['est_active']) continue; ?>
-                            <option value="<?= (int)$s['id_salle'] ?>">
-                                <?= htmlspecialchars($s['nom_salle']) ?>
-                                <?php if ($s['capacite']): ?>(<?= (int)$s['capacite'] ?> pl.)<?php endif; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select></div>
-                <div class="form-group"><label>Vol. horaire hebdo. (h)</label>
-                    <input type="number" name="volume_horaire_hebdo" min="1" max="40" placeholder="Ex : 6"></div>
-            </div>
-
-            <div class="form-group"><label>Année scolaire <span class="required">*</span></label>
-                <select name="annee_scolaire" required>
-                    <?php foreach ($annees as $a): ?>
-                        <option value="<?= $a ?>" <?= $a === $annee ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($a) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select></div>
-
-            <div class="form-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="est_principal" value="1">
-                    Enseignant principal de cette matière dans la classe
-                </label>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="toggleModal('modal-add-aff')">Annuler</button>
-                <button type="submit" class="btn btn-primary">Créer l'affectation</button>
-            </div>
-        </form>
+        <div class="form-group" style="padding:0 28px 8px">
+            <p style="font-size:14px;color:#64748b;margin-bottom:16px">
+                Sélectionnez l'enseignant à affecter. Vous pourrez ensuite lui attribuer
+                plusieurs départements, matières, classes et salles.
+            </p>
+            <label>Enseignant <span class="required">*</span></label>
+            <select id="select-ens-affecter" onchange="">
+                <option value="">— Sélectionner un enseignant —</option>
+                <?php foreach ($enseignants as $e): ?>
+                    <option value="<?= (int)$e['id_utilisateur'] ?>">
+                        <?= htmlspecialchars($e['nom'] . ' ' . $e['prenom']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="toggleModal('modal-add-aff')">Annuler</button>
+            <button type="button" class="btn btn-primary"
+                    onclick="goAffecter()">Gérer ses affectations →</button>
+        </div>
     </div>
 </div>
 
@@ -454,6 +392,13 @@ function openEditAff(a) {
 }
 function escH(t) {
     return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function goAffecter() {
+    const sel = document.getElementById('select-ens-affecter');
+    const id  = sel.value;
+    if (!id) { alert('Veuillez sélectionner un enseignant.'); return; }
+    window.location.href = '<?= APP_URL ?>/app.php?page=affecter-enseignant&id=' + id;
 }
 </script>
 

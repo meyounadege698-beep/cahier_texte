@@ -72,10 +72,11 @@ class SeanceController
             ? $this->model->getProgrammeActif($idMatiere)
             : null;
 
-        $csrf      = Session::generateCsrf();
-        $pageTitle = 'Saisie de séance — ' . APP_NAME;
-        $extraCss  = 'seance.css';
-        $isReuse   = $idReuse > 0 && !empty($reuseData);
+        $csrf           = Session::generateCsrf();
+        $pageTitle      = 'Saisie de séance — ' . APP_NAME;
+        $extraCss       = 'seance.css';
+        $isReuse        = $idReuse > 0 && !empty($reuseData);
+        $anneeCourante  = $this->model->getAnneeCourante();
         include APP_ROOT . '/app/views/seance/form.php';
     }
 

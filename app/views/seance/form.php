@@ -41,7 +41,7 @@ $selectedMatiere  = (int)($_GET['matiere'] ?? $old['id_matiere'] ?? 0);
 
                 <?php if (empty($classes)): ?>
                     <div class="alert-warning">
-                        ⚠️ Aucune classe ne vous est affectée pour l'année <?= htmlspecialchars($model->getAnneeCourante()) ?>.
+                        ⚠️ Aucune classe ne vous est affectée pour l'année <?= htmlspecialchars($anneeCourante ?? '') ?>.
                         Contactez l'administrateur.
                     </div>
                 <?php else: ?>

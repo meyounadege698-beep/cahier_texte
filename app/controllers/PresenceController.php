@@ -24,21 +24,33 @@ class PresenceController
     // ── Formulaire d'appel ───────────────────────────────────
     public function form(): void
     {
-        $idEnseignant = (int)Session::get('user_id');
-        $idSeance     = (int)($_GET['seance'] ?? 0);
+        $idUtilisateur = (int)Session::get('user_id');
+        $role          = Session::get('role');
+        $idSeance      = (int)($_GET['seance'] ?? 0);
 
-        // Charger les classes de l'enseignant
+        // Charger les classes selon le rôle
         require_once APP_ROOT . '/app/models/SeanceModel.php';
         $seanceModel = new SeanceModel();
-        $classes     = $seanceModel->getClassesByEnseignant($idEnseignant);
+
+        // Censeur : toutes les classes. Enseignant : ses classes affectées.
+        if ($role === 'censeur') {
+            require_once APP_ROOT . '/app/models/EleveModel.php';
+            $eleveModel = new EleveModel();
+            $classes = $eleveModel->getAllClasses($seanceModel->getAnneeCourante());
+        } else {
+            $classes = $seanceModel->getClassesByEnseignant($idUtilisateur);
+        }
+
+        // Enseignant pour la requête des séances (le censeur voit toutes les séances)
+        $idEnseignant = $role === 'censeur' ? 0 : $idUtilisateur;
 
         $idClasse = (int)($_GET['classe'] ?? 0);
         $seances  = $idClasse > 0
             ? $this->model->getSeancesForAppel($idEnseignant, $idClasse)
             : [];
 
-        $eleves   = [];
-        $presences= [];
+        $eleves     = [];
+        $presences  = [];
         $seanceInfo = null;
 
         if ($idSeance > 0) {
@@ -47,8 +59,7 @@ class PresenceController
                 $idClasse = (int)$seanceInfo['id_classe'];
                 $eleves   = $this->model->getElevesByClasse($idClasse);
                 $presences= $this->model->getPresencesBySeance($idSeance);
-                // Recharger les séances de la classe
-                $seances = $this->model->getSeancesForAppel($idEnseignant, $idClasse);
+                $seances  = $this->model->getSeancesForAppel($idEnseignant, $idClasse);
             }
         }
 
@@ -99,8 +110,14 @@ class PresenceController
             ? $this->model->getStatsClasse($idClasse, $annee)
             : [];
 
-        // Charger les classes de l'enseignant
-        $classes = $seanceModel->getClassesByEnseignant((int)Session::get('user_id'));
+        // Censeur voit toutes les classes, enseignant seulement ses classes
+        if (Session::get('role') === 'censeur') {
+            require_once APP_ROOT . '/app/models/EleveModel.php';
+            $eleveModel = new EleveModel();
+            $classes = $eleveModel->getAllClasses($annee);
+        } else {
+            $classes = $seanceModel->getClassesByEnseignant((int)Session::get('user_id'));
+        }
 
         $pageTitle = 'Historique présences — ' . APP_NAME;
         $extraCss  = 'presence.css';

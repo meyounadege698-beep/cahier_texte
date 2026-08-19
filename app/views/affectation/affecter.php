@@ -4,9 +4,13 @@ $extraCss  = 'affectation.css';
 include APP_ROOT . '/app/views/layouts/header.php';
 
 // Indexer les matières par département pour le JS
+// dept_id = id_departement (alias pour compatibilité JSON → JS)
 $matieresByDept = [];
 foreach ($matieres as $m) {
-    $matieresByDept[$m['dept_id']][] = $m;
+    $key = (int)($m['dept_id'] ?? $m['id_departement'] ?? 0);
+    if ($key > 0) {
+        $matieresByDept[$key][] = $m;
+    }
 }
 ?>
 
