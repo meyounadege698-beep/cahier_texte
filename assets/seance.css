@@ -1,0 +1,243 @@
+/* ============================================================
+   SEANCE.CSS — Module saisie de séance
+   ============================================================ */
+
+/* ===== EN-TÊTE ===== */
+.seance-header {
+    margin-bottom: 28px;
+}
+.seance-header h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+.seance-header p  { font-size: 15px; color: #64748b; }
+
+/* ===== LAYOUT DEUX COLONNES ===== */
+.seance-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 28px;
+    align-items: start;
+}
+
+/* ===== CARTE FORMULAIRE ===== */
+.seance-form-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+/* ===== ÉTAPES ===== */
+.form-step {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+.form-step:last-of-type { border-bottom: none; }
+.step-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.step-num {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #4f46e5, #3730a3);
+    color: #fff;
+    font-size: 13px; font-weight: 800;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ===== FORM GROUPS ===== */
+.form-group { margin-bottom: 18px; }
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 7px;
+}
+.required { color: #dc2626; margin-left: 2px; }
+.optional  { color: #94a3b8; font-weight: 400; font-size: 12px; }
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color .25s, background .25s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #4f46e5;
+    background: #fff;
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row--3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ===== OBJECTIFS HINT ===== */
+.objectifs-hint {
+    background: #eff6ff;
+    border-left: 3px solid #4f46e5;
+    color: #1e40af;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+/* ===== POINT MANQUANT ===== */
+.point-manquant-zone { margin-top: 12px; }
+.btn-add-point {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 2px dashed #f59e0b;
+    color: #b45309;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+}
+.btn-add-point:hover { background: #fef3c7; border-color: #d97706; }
+
+.point-manquant-panel {
+    margin-top: 14px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 20px;
+}
+.panel-info {
+    font-size: 13px;
+    color: #92400e;
+    background: #fef3c7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+.point-manquant-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(245,158,11,0.35);
+}
+.btn-warning:hover { box-shadow: 0 6px 20px rgba(245,158,11,0.45); }
+
+.no-programme-warning {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+/* ===== ALERTE AVERTISSEMENT ===== */
+.alert-warning {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+/* ===== SUBMIT ===== */
+.form-submit-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 8px;
+}
+
+/* ===== SÉANCES RÉCENTES ===== */
+.seances-recentes {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 80px;
+}
+.seances-recentes h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+.empty-hint { font-size: 13px; color: #94a3b8; text-align: center; padding: 20px 0; }
+
+.seance-list { display: flex; flex-direction: column; gap: 12px; }
+.seance-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    transition: border-color .2s;
+}
+.seance-item:hover { border-color: #a5b4fc; }
+.seance-date {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4f46e5, #3730a3);
+    color: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 1.2;
+}
+.seance-classe { font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 3px; }
+.seance-point  { font-size: 12px; color: #4f46e5; margin-bottom: 3px; }
+.seance-horaire{ font-size: 11px; color: #94a3b8; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .seance-layout { grid-template-columns: 1fr; }
+    .seances-recentes { position: static; }
+    .form-row--3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+    .seance-form-card { padding: 20px; }
+    .form-row, .form-row--3 { grid-template-columns: 1fr; }
+    .form-submit-row { flex-direction: column; }
+    .form-submit-row .btn { width: 100%; justify-content: center; }
+}

@@ -17,3 +17,10 @@ define('APP_ROOT', dirname(__DIR__));
 
 // ===== TABLES =====
 define('TABLE_USERS', 'utilisateur');
+
+// ===== UPLOADS =====
+define('UPLOAD_DIR',     APP_ROOT . '/uploads');
+define('UPLOAD_URL',     APP_URL  . '/uploads');
+define('UPLOAD_MAX_MB',  10);  // taille max par fichier en Mo
+define('UPLOAD_ALLOWED', ['pdf','doc','docx','xls','xlsx','ppt','pptx',
+                           'jpg','jpeg','png','gif','webp','txt','zip']);

@@ -1,0 +1,177 @@
+/* ============================================================
+   CATALOGUE.CSS — Gestion départements & matières
+   ============================================================ */
+
+.catalogue-header {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 20px;
+    margin-bottom: 32px; flex-wrap: wrap;
+}
+.catalogue-header h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+.catalogue-header p  { font-size: 14px; color: #64748b; }
+
+/* ===== LAYOUT DEUX COLONNES ===== */
+.catalogue-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* ===== SECTION ===== */
+.catalogue-section {
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 18px; padding: 28px;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.06);
+}
+.cs-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f1f5f9;
+}
+.cs-header h2 {
+    font-size: 18px; font-weight: 800;
+    color: #1e293b; display: flex;
+    align-items: center; gap: 10px;
+}
+.count-badge {
+    background: #4f46e5; color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 50px;
+}
+.cs-empty {
+    text-align: center; padding: 32px;
+    color: #94a3b8; font-size: 14px;
+    border: 1px dashed #e2e8f0; border-radius: 12px;
+}
+
+/* ===== LISTE ===== */
+.cs-list { display: flex; flex-direction: column; gap: 10px; }
+.cs-list--mats { gap: 8px; }
+
+.cs-item {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+    padding: 14px 16px;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    transition: border-color .2s, box-shadow .2s;
+}
+.cs-item:hover { border-color: #a5b4fc; box-shadow: 0 2px 8px rgba(79,70,229,.08); }
+
+.cs-item-main { flex: 1; }
+.cs-item-name {
+    font-size: 15px; font-weight: 700; color: #1e293b;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+}
+.cs-code {
+    background: #ede9fe; color: #4f46e5;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 50px;
+    font-family: monospace;
+}
+.cs-item-desc { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+.cs-item-meta {
+    display: flex; gap: 12px; font-size: 12px; color: #94a3b8;
+}
+
+.cs-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-icon {
+    width: 32px; height: 32px; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+}
+.btn-icon--edit   { background: #e0f2fe; color: #0369a1; }
+.btn-icon--edit:hover { background: #0369a1; color: #fff; }
+.btn-icon--danger { background: #fee2e2; color: #dc2626; }
+.btn-icon--danger:hover { background: #dc2626; color: #fff; }
+.btn-icon--locked { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+
+/* ===== GROUPES PAR DÉPARTEMENT ===== */
+.mat-group { margin-bottom: 20px; }
+.mat-group:last-child { margin-bottom: 0; }
+.mat-group-title {
+    font-size: 13px; font-weight: 700; color: #64748b;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 6px 0; margin-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ===== MODALS ===== */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+}
+.modal {
+    background: #fff; border-radius: 20px;
+    width: 100%; max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-height: 90vh; overflow-y: auto;
+    animation: modalIn .25s ease;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(.95) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)  translateY(0); }
+}
+.modal-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 24px 28px 0;
+    margin-bottom: 20px;
+}
+.modal-header h3 { font-size: 18px; font-weight: 800; color: #1e293b; }
+.modal-close {
+    background: none; border: none; font-size: 18px;
+    color: #94a3b8; cursor: pointer; padding: 4px;
+    border-radius: 8px; transition: color .2s, background .2s;
+}
+.modal-close:hover { color: #dc2626; background: #fee2e2; }
+
+.modal .form-group { padding: 0 28px; margin-bottom: 16px; }
+.modal .form-row   { padding: 0 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0; }
+.modal .form-row .form-group { padding: 0; }
+
+.modal .form-group label {
+    display: block; font-weight: 600;
+    font-size: 13px; color: #374151; margin-bottom: 6px;
+}
+.modal .form-group input,
+.modal .form-group select,
+.modal .form-group textarea {
+    width: 100%; padding: 10px 12px;
+    border: 2px solid #e2e8f0; border-radius: 10px;
+    font-size: 14px; font-family: inherit;
+    background: #f8fafc; outline: none;
+    transition: border-color .25s;
+}
+.modal .form-group input:focus,
+.modal .form-group select:focus,
+.modal .form-group textarea:focus {
+    border-color: #4f46e5; background: #fff;
+}
+.modal .form-group textarea { resize: vertical; min-height: 60px; }
+
+.modal-footer {
+    display: flex; gap: 10px; justify-content: flex-end;
+    padding: 20px 28px 24px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 12px;
+}
+
+.required { color: #dc2626; margin-left: 2px; }
+.optional  { color: #94a3b8; font-weight: 400; font-size: 11px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .catalogue-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    .modal .form-row { grid-template-columns: 1fr; }
+    .modal { border-radius: 16px; }
+}

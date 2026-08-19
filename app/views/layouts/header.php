@@ -13,7 +13,7 @@
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <a href="<?= APP_URL ?>/?page=dashboard" class="nav-brand">
+    <a href="<?= APP_URL ?>/app.php?page=dashboard" class="nav-brand">
         📘 <?= APP_NAME ?>
     </a>
     <div class="nav-links">
@@ -22,10 +22,10 @@
                 👤 <?= htmlspecialchars(Session::get('nom'), ENT_QUOTES, 'UTF-8') ?>
                 <span class="badge-role"><?= htmlspecialchars(Session::get('role'), ENT_QUOTES, 'UTF-8') ?></span>
             </span>
-            <a href="<?= APP_URL ?>/?page=logout" class="btn btn-outline">🚪 Déconnexion</a>
+            <a href="<?= APP_URL ?>/app.php?page=logout" class="btn btn-outline">🚪 Déconnexion</a>
         <?php else: ?>
-            <a href="<?= APP_URL ?>/?page=login"    class="btn btn-outline">Se connecter</a>
-            <a href="<?= APP_URL ?>/?page=register" class="btn btn-primary">S'inscrire</a>
+            <a href="<?= APP_URL ?>/app.php?page=login"    class="btn btn-outline">Se connecter</a>
+            <a href="<?= APP_URL ?>/app.php?page=register" class="btn btn-primary">S'inscrire</a>
         <?php endif; ?>
     </div>
 </nav>

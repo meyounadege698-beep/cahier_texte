@@ -1,0 +1,233 @@
+/* ============================================================
+   BIBLIOTHEQUE.CSS — Bibliothèque de séances + upload
+   ============================================================ */
+
+/* ===== EN-TÊTE ===== */
+.biblio-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    gap: 20px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.biblio-header h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+.biblio-header p  { font-size: 14px; color: #64748b; }
+
+/* ===== FILTRES ===== */
+.biblio-filters {
+    display: flex; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 14px; padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.filter-group input,
+.filter-group select {
+    padding: 9px 14px;
+    border: 2px solid #e2e8f0; border-radius: 10px;
+    font-size: 14px; font-family: inherit;
+    background: #f8fafc; outline: none;
+    transition: border-color .25s;
+    min-width: 200px;
+}
+.filter-group input:focus,
+.filter-group select:focus { border-color: #4f46e5; background: #fff; }
+.btn-reset {
+    font-size: 13px; color: #94a3b8;
+    text-decoration: none; padding: 6px 10px;
+    border-radius: 8px; transition: color .2s;
+}
+.btn-reset:hover { color: #dc2626; }
+
+.biblio-count {
+    font-size: 13px; color: #64748b;
+    margin-bottom: 20px; padding-left: 4px;
+}
+
+/* ===== GRILLE DE CARTES ===== */
+.seances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+}
+
+/* ===== CARTE SÉANCE ===== */
+.seance-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column; gap: 14px;
+    transition: box-shadow .25s, transform .25s;
+}
+.seance-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+.sc-header { display: flex; flex-direction: column; gap: 8px; }
+.sc-meta {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-size: 13px; color: #64748b;
+}
+.sc-date   { font-weight: 600; color: #4f46e5; }
+.sc-horaire { color: #94a3b8; }
+
+.sc-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { display: inline-flex; align-items: center; gap: 4px;
+       padding: 3px 10px; border-radius: 50px;
+       font-size: 12px; font-weight: 600; }
+.tag--classe  { background: #ede9fe; color: #4f46e5; }
+.tag--matiere { background: #dbeafe; color: #1d4ed8; }
+
+.sc-programme {
+    font-size: 13px; color: #4f46e5; font-weight: 600;
+    background: #eff6ff; padding: 8px 12px; border-radius: 8px;
+}
+.sc-contenu {
+    font-size: 14px; color: #374151; line-height: 1.65;
+    max-height: 80px; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.sc-objectifs {
+    font-size: 13px; color: #065f46;
+    background: #ecfdf5; padding: 8px 12px; border-radius: 8px;
+}
+.sc-commentaire {
+    font-size: 12px; color: #64748b; font-style: italic;
+}
+
+/* ===== PIÈCES JOINTES ===== */
+.sc-pieces { border-top: 1px dashed #e2e8f0; padding-top: 12px; }
+.sc-pieces-title {
+    font-size: 12px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.pieces-list { display: flex; flex-direction: column; gap: 6px; }
+.piece-item {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 8px;
+}
+.piece-link {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #1d4ed8; text-decoration: none;
+    padding: 6px 10px; background: #eff6ff;
+    border-radius: 8px; flex: 1;
+    transition: background .2s;
+    overflow: hidden;
+}
+.piece-link:hover { background: #dbeafe; text-decoration: none; }
+.piece-link span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.piece-link small { color: #94a3b8; flex-shrink: 0; }
+.piece-delete-form { flex-shrink: 0; }
+.btn-icon {
+    width: 30px; height: 30px; border: none;
+    border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; transition: background .2s;
+}
+.btn-icon--danger { background: #fee2e2; color: #dc2626; }
+.btn-icon--danger:hover { background: #dc2626; color: #fff; }
+
+/* ===== ZONE UPLOAD ===== */
+.sc-upload { border-top: 1px dashed #e2e8f0; padding-top: 12px; }
+.btn-upload-toggle {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: 2px dashed #cbd5e1;
+    color: #64748b; font-size: 13px; font-weight: 600;
+    padding: 8px 14px; border-radius: 10px;
+    cursor: pointer; width: 100%; justify-content: center;
+    font-family: inherit; transition: all .2s;
+}
+.btn-upload-toggle:hover { border-color: #4f46e5; color: #4f46e5; background: #eff6ff; }
+
+.upload-panel {
+    margin-top: 12px;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 12px; padding: 16px;
+}
+
+/* Dropzone partagée (form saisie + bibliothèque) */
+.upload-dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    background: #fafafa;
+}
+.upload-dropzone:hover,
+.upload-dropzone.dragover { border-color: #4f46e5; background: #eff6ff; }
+.upload-dropzone.has-files { border-color: #10b981; background: #ecfdf5; }
+.dz-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-dropzone p     { font-size: 14px; color: #374151; font-weight: 600; margin-bottom: 4px; }
+.upload-dropzone small { font-size: 12px; color: #94a3b8; }
+
+.dz-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; justify-content: center; }
+.dz-file-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: #e0f2fe; color: #0369a1;
+    padding: 4px 10px; border-radius: 50px;
+    font-size: 12px;
+}
+.dz-file-chip small { color: #7dd3fc; }
+
+.upload-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 14px;
+}
+
+/* ===== ACTIONS CARTE ===== */
+.sc-actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    border-top: 1px solid #f1f5f9; padding-top: 14px;
+    margin-top: auto;
+}
+
+/* ===== BANNIÈRE RÉUTILISATION ===== */
+.reuse-banner {
+    background: #fef3c7; border: 1px solid #fde68a;
+    color: #92400e; font-size: 14px;
+    padding: 12px 18px; border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+}
+.reuse-banner a { color: #b45309; font-weight: 600; text-decoration: underline; }
+
+/* ===== LIEN BIBLIOTHÈQUE (colonne droite) ===== */
+.btn-biblio-link {
+    display: block; text-align: center;
+    background: #eff6ff; color: #1d4ed8;
+    font-size: 13px; font-weight: 600;
+    padding: 10px 14px; border-radius: 10px;
+    text-decoration: none; margin-bottom: 16px;
+    transition: background .2s;
+}
+.btn-biblio-link:hover { background: #dbeafe; text-decoration: none; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center; padding: 80px 20px;
+    background: #fff; border-radius: 16px;
+    border: 1px dashed #cbd5e1;
+}
+.empty-icon { font-size: 60px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+.empty-state p  { font-size: 14px; color: #64748b; margin-bottom: 24px; }
+
+/* ===== BOUTONS ===== */
+.btn-sm { padding: 7px 16px; font-size: 13px; border-radius: 10px; }
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff; box-shadow: 0 3px 12px rgba(245,158,11,.35);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .seances-grid { grid-template-columns: 1fr; }
+    .biblio-filters { flex-direction: column; align-items: stretch; }
+    .filter-group input,
+    .filter-group select { min-width: auto; width: 100%; }
+}

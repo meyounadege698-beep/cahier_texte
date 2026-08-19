@@ -1,0 +1,9 @@
+# Sécurité : interdire l'exécution de scripts dans ce dossier
+Options -ExecCGI
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .sh .cgi
+php_flag engine off
+
+# Autoriser uniquement le téléchargement direct des fichiers
+<FilesMatch "\.(pdf|doc|docx|xls|xlsx|ppt|pptx|jpg|jpeg|png|gif|webp|txt|zip)$">
+    Allow from all
+</FilesMatch>

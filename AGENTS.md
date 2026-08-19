@@ -1,6 +1,6 @@
 # AGENTS.md — Cahier de Texte Digital
 
-> Dernière mise à jour : 2026-08-14 v3 — par Kiro (corrections fondations A)
+> Dernière mise à jour : 2026-08-19 v6 — par Kiro (modules présence, devoirs, supervision, dashboard différencié par rôle)
 > Ce fichier est la source de vérité du contexte projet. Le lire intégralement avant toute action.
 
 ---
@@ -34,40 +34,90 @@
 
 ```
 cahier_texte/
-├── index.php                        ← Front Controller UNIQUE — toutes les requêtes passent ici
-├── .htaccess                        ← Bloque accès direct à app/, config/, core/ + réécriture URL
-├── utilisateur.sql                  ← Script SQL complet (CREATE DATABASE + CREATE TABLE)
+├── index.php                        ← Page d'accueil visiteur (point d'entrée public)
+├── app.php                          ← Front Controller MVC (toutes les routes app)
+├── .htaccess                        ← Sécurité + réécriture URL
+├── cahierdetexte.sql                ← Script SQL complet
+├── migration_salles_affectations.sql← Migration : tables salle + colonnes id_salle
 ├── AGENTS.md                        ← Ce fichier
 │
-├── config/
-│   └── config.php                   ← Constantes globales (DB_*, APP_*, TABLE_USERS)
+├── config/config.php                ← DB_*, APP_*, UPLOAD_*, TABLE_USERS
 │
-├── core/                            ← Classes système, chargées manuellement dans index.php
-│   ├── Database.php                 ← Singleton MySQLi — une seule connexion partagée
-│   ├── Session.php                  ← Session + flash messages + CSRF
-│   └── Router.php                   ← Routeur par ?page= (whitelist explicite)
+├── core/
+│   ├── Database.php                 ← Singleton MySQLi
+│   ├── Session.php                  ← Session + flash + CSRF
+│   ├── Router.php                   ← Routeur ?page= (whitelist)
+│   └── Uploader.php                 ← Upload sécurisé (MIME check, dossier /uploads/)
 │
 ├── app/
-│   ├── controllers/                 ← Chargés dynamiquement par le Router
-│   │   ├── AuthController.php       ← login / loginForm / register / registerForm / logout
-│   │   └── DashboardController.php  ← index (page principale protégée)
+│   ├── controllers/
+│   │   ├── AuthController.php       ← login/register/logout
+│   │   ├── DashboardController.php  ← dashboard différencié par rôle
+│   │   ├── HomeController.php       ← page d'accueil visiteur
+│   │   ├── EnseignantController.php ← CRUD enseignants + reset mdp (censeur)
+│   │   ├── EleveController.php      ← CRUD classes + élèves (censeur)
+│   │   ├── AffectationController.php← Salles + affectations multiples (censeur)
+│   │   ├── CatalogueController.php  ← Depts + matières (censeur)
+│   │   ├── ProgressionOfficielleController.php ← Programmes + chapitres (censeur)
+│   │   ├── SupervisionController.php← Tableau de bord supervision (censeur)
+│   │   ├── SeanceController.php     ← Saisie séances + upload (enseignant)
+│   │   ├── BibliothequeController.php← Bibliothèque séances + upload (enseignant)
+│   │   ├── PresenceController.php   ← Appel + présences + historique (enseignant)
+│   │   ├── DevoirController.php     ← Devoirs rattachés aux séances (enseignant)
+│   │   └── ApiController.php        ← Endpoints JSON AJAX (matières, points programme)
 │   ├── models/
-│   │   └── UserModel.php            ← CRUD table `utilisateur` via MySQLi préparé
+│   │   ├── UserModel.php            ← Auth (findByEmail, create, updateLastLogin)
+│   │   ├── EnseignantModel.php      ← CRUD enseignants, generatePassword
+│   │   ├── EleveModel.php           ← CRUD classes + élèves, recherche, matricule
+│   │   ├── AffectationModel.php     ← Salles + affectations multiples
+│   │   ├── CatalogueModel.php       ← Depts + matières CRUD
+│   │   ├── ProgressionOfficielleModel.php ← Programmes + chapitres
+│   │   ├── SupervisionModel.php     ← KPIs, alertes, taux couverture, validations
+│   │   ├── PresenceModel.php        ← Appel, présences, stats assiduité
+│   │   ├── DevoirModel.php          ← Devoirs rattachés séances
+│   │   └── SeanceModel.php          ← Séances + pièces jointes + bibliothèque
 │   └── views/
-│       ├── auth/
-│       │   ├── login.php            ← Vue standalone (pas de layout) — HTML complet
-│       │   └── register.php         ← Vue standalone (pas de layout) — HTML complet
-│       ├── dashboard/
-│       │   └── index.php            ← Inclut layouts/header.php + layouts/footer.php
-│       ├── layouts/
-│       │   ├── header.php           ← DOCTYPE + navbar (utilisé par les pages internes)
-│       │   └── footer.php           ← Ferme </main></body></html>
-│       └── errors/
-│           └── 404.php              ← Page d'erreur 404
+│       ├── home/index.php           ← Page visiteur complète
+│       ├── auth/login.php           ← Vue connexion standalone
+│       ├── auth/register.php        ← Vue inscription standalone
+│       ├── dashboard/index.php      ← Dashboard différencié par rôle
+│       ├── layouts/header.php       ← Navbar + DOCTYPE
+│       ├── layouts/footer.php       ← Ferme body/html
+│       ├── errors/404.php
+│       ├── enseignant/index.php     ← Liste + inscription enseignants
+│       ├── eleve/classes.php        ← CRUD classes
+│       ├── eleve/eleves.php         ← CRUD élèves d'une classe
+│       ├── affectation/index.php    ← Salles + vue globale affectations
+│       ├── affectation/affecter.php ← Formulaire affectation multiple
+│       ├── catalogue/index.php      ← Depts + matières
+│       ├── progression/index.php    ← Liste programmes
+│       ├── progression/create.php   ← Créer programme
+│       ├── progression/detail.php   ← Chapitres + publication
+│       ├── supervision/index.php    ← Tableau de bord censeur
+│       ├── presence/form.php        ← Prise d'appel par séance
+│       ├── presence/historique.php  ← Stats assiduité par classe
+│       ├── devoir/index.php         ← Liste + création devoirs
+│       └── seance/
+│           ├── form.php             ← Saisie séance + upload
+│           └── bibliotheque.php     ← Bibliothèque + réutilisation
 │
-└── assets/
-    ├── style.css                    ← Styles partagés : navbar, dashboard, cards, alerts
-    └── auth.css                     ← Styles spécifiques login/register (fond dégradé)
+├── assets/
+│   ├── style.css                    ← Navbar, dashboard, cards, module-cards
+│   ├── auth.css                     ← Login/register
+│   ├── home.css                     ← Page d'accueil visiteur
+│   ├── progression.css              ← Module progression officielle
+│   ├── catalogue.css                ← Depts + matières
+│   ├── affectation.css              ← Salles + affectations
+│   ├── enseignant.css               ← Gestion enseignants
+│   ├── eleve.css                    ← Classes + élèves
+│   ├── supervision.css              ← Tableau de bord censeur
+│   ├── presence.css                 ← Appel + présences
+│   ├── devoir.css                   ← Module devoirs
+│   ├── seance.css                   ← Saisie séance
+│   └── bibliotheque.css             ← Bibliothèque séances
+│
+└── uploads/                         ← Fichiers uploadés (ignoré par .htaccess)
+    └── {id_utilisateur}/            ← Sous-dossier par enseignant
 ```
 
 **Pattern architectural :** MVC maison sans autoloader — les contrôleurs sont chargés par `require_once` dans le Router. Les modèles sont chargés par `require_once` dans le constructeur du contrôleur.
@@ -101,36 +151,35 @@ GET /?page=dashboard
 
 ### ✅ Fonctionnalités TERMINÉES
 
-- **Structure MVC** : Front Controller, Router, core classes (Database, Session, Router)
-- **Authentification complète** :
-  - Inscription (validation serveur, bcrypt, vérification email unique, CSRF)
-  - Connexion (CSRF, message d'erreur générique intentionnel, session sécurisée)
-  - Déconnexion (destruction complète session + cookie)
-  - Protection CSRF sur tous les formulaires POST
-  - Protection fixation de session (`session_regenerate_id`)
-  - Cookie `httponly` + `SameSite: Strict`
-  - Redirection automatique si déjà connecté
-  - Re-remplissage formulaire après erreur (`old_input` en session)
-- **Dashboard** : page protégée avec infos profil, session active, actions rapides
-- **Navbar** : affichage dynamique connecté/non connecté + badge rôle
-- **Gestion des rôles** : 5 rôles définis (voir section 6)
-- **Nettoyage du projet** : tous les fichiers doublons supprimés
+- **Structure MVC** : Front Controller (`app.php`), Router, core (Database, Session, Router, Uploader)
+- **Page d'accueil visiteur** : `index.php` racine, présentation complète du projet
+- **Authentification** : inscription, connexion, déconnexion, CSRF, bcrypt, `est_actif`, `derniere_connexion`, `prenom`
+- **Dashboard différencié par rôle** : enseignant (6 modules), censeur (8 modules), administrateur (générique)
+- **Module censeur — Enseignants** : inscription mdp par défaut/personnalisé/généré, affichage mdp unique, modifier, activer/désactiver, reset mdp, bouton affecter
+- **Module censeur — Affectations multiples** : formulaire dynamique N lignes (classe+matière+salle+volume), groupé par département
+- **Module censeur — Salles** : CRUD salles (type, capacité, localisation), protection si affectée
+- **Module censeur — Catalogue** : CRUD départements + matières via modals
+- **Module censeur — Progression officielle** : création programme, chapitres, publication
+- **Module censeur — Classes** : CRUD classes par année scolaire, compteur élèves, barre de remplissage
+- **Module censeur — Élèves** : inscription (matricule, sexe, date/lieu naissance, contact parent), modifier, activer/transférer
+- **Module censeur — Supervision** : KPIs (enseignants actifs, séances semaine, validations, programmes), alertes cahiers non remplis, taux couverture programme par enseignant/classe/matière, validations progressions (approuver/refuser), fil d'activité récente
+- **Module enseignant — Saisie séance** : classe/matière AJAX, points programme, ajout point manquant, upload pièces jointes, réutilisation, étape 5 upload
+- **Module enseignant — Bibliothèque** : liste séances, filtres, upload drag & drop, bouton Réutiliser
+- **Module enseignant — Appel & Présence** : prise d'appel par séance (Présent/Absent/Retard/Excusé), motif, sélection rapide tous présents/absents
+- **Module enseignant — Historique présences** : stats assiduité par élève (total séances, taux %, barre colorée)
+- **Module enseignant — Devoirs** : création (DM/DS/Éval/Projet), rattaché à une séance, note sur, coefficient, suppression
+- **Upload fichiers** : `core/Uploader.php` sécurisé, `/uploads/{id_user}/`, vérification MIME
 
 ### 🚧 Fonctionnalités EN COURS
 
-- Néant — en attente des prochaines instructions métier
+- Néant — tous les modules planifiés sont livrés et syntaxiquement validés
 
-### 📋 Fonctionnalités NON commencées (attendues pour un cahier de texte)
+### 📋 Fonctionnalités restantes (améliorations futures)
 
-- Gestion des classes / matières / niveaux
-- Saisie des cours par les enseignants (cahier de texte proprement dit)
-- Consultation des cours par les élèves et parents
-- Gestion des devoirs et évaluations
-- Suivi des absences
-- Tableau de bord différencié par rôle (enseignant vs élève vs admin)
-- Modification du profil utilisateur
-- Réinitialisation du mot de passe
-- Module administration (gestion des utilisateurs)
+1. **Génération rapports PDF** — librairie externe nécessaire (ex: TCPDF ou DomPDF)
+2. **Réinitialisation mot de passe par email** — nécessite config SMTP
+3. **Mode hors-ligne avec synchronisation** — Service Worker / PWA
+4. **Résumé automatique par IA** des notes du professeur — API externe
 
 ---
 
@@ -208,23 +257,29 @@ GET /?page=dashboard
 
 ## 7. Pièges connus / erreurs déjà rencontrées
 
-- **Nom de base de données avec espace** : ~~`DB_NAME = 'mon projet'`~~ **Corrigé le 2026-08-14** → `DB_NAME = 'cahierdetexte'` dans `config/config.php` et `cahierdetexte.sql`.
+- **Nom de base de données avec espace** : ~~`DB_NAME = 'mon projet'`~~ **Corrigé 2026-08-14** → `DB_NAME = 'cahierdetexte'`.
 
-- **`implode()` sans séparateur sur les erreurs** : ~~Bug dans `AuthController::register()`~~ **Corrigé le 2026-08-14** → `implode('<br>', $errors)`.
+- **`implode()` sans séparateur** : ~~Bug `AuthController::register()`~~ **Corrigé 2026-08-14** → `implode('<br>', $errors)`.
 
-- **`est_actif` non vérifié au login** : ~~Présent en BDD mais jamais vérifié~~ **Corrigé le 2026-08-14** → vérification dans `AuthController::login()` avec message explicite.
+- **`est_actif` non vérifié au login** : **Corrigé 2026-08-14** → vérification dans `AuthController::login()`.
 
-- **`derniere_connexion` jamais mise à jour** : ~~Colonne BDD ignorée~~ **Corrigé le 2026-08-14** → `UserModel::updateLastLogin()` appelé à chaque login réussi.
+- **`derniere_connexion` jamais mise à jour** : **Corrigé 2026-08-14** → `UserModel::updateLastLogin()` à chaque login.
 
-- **`prenom` absent du flux** : ~~Colonne BDD non gérée côté PHP~~ **Corrigé le 2026-08-14** → `UserModel::create()`, `findByEmail()`, `findById()`, `Session::setUser()`, formulaire register, dashboard tous mis à jour.
+- **`prenom` absent du flux** : **Corrigé 2026-08-14** → partout (UserModel, Session, vues).
 
-- **`SESSION::getFlash()` affiche le HTML brut** : La méthode retourne du HTML avec `echo`. Si appelée dans un contexte où l'output est bufférisé différemment, penser à utiliser `echo Session::getFlash()` (déjà fait dans les vues).
+- **`fs_append` hors classe** : En 2026-08-18, `SeanceModel.php` a eu des méthodes ajoutées **après** le `}` de fermeture de classe via `fs_append`, causant un parse error. **Solution** : toujours réécrire le fichier complet (`fs_write`) plutôt qu'utiliser `fs_append` sur une classe PHP.
 
-- **"Se souvenir de moi" non implémenté côté serveur** : La vue login affiche la checkbox et lit `$_COOKIE['remember_email']`, mais `AuthController::login()` ne définit jamais ce cookie. La feature est visuelle seulement pour l'instant.
+- **URLs `/?page=` vs `/app.php?page=`** : Le projet a deux points d'entrée — `index.php` (page visiteur) et `app.php` (front controller MVC). Tous les liens internes doivent pointer vers `app.php?page=`, pas `/?page=`. Vérifier systématiquement après modification de vues.
 
-- **Dossiers `assets copy/` et `includes copy/`** : Étaient des artefacts de l'ancien projet. Supprimés. Ne pas les recréer.
+- **`DevoirModel::create()` — espace dans bind_param** : La chaîne de types contenait un espace (`"issssi i"`) au lieu de `"issssii"`. Corrigé 2026-08-19.
 
-- **`TABLE_utilisateur` vs `TABLE_USERS`** : L'ancienne config définissait `TABLE_utilisateur` (faute). La constante correcte est `TABLE_USERS` définie dans `config/config.php` et pointant vers la table `utilisateur`.
+- **`migration_salles_affectations.sql`** : Doit être exécuté manuellement dans phpMyAdmin avant d'utiliser les modules Salles et Affectations. Ajoute la table `salle` et les colonnes `id_salle` dans `affectation_enseignant` et `seance`.
+
+- **"Se souvenir de moi"** : Visuel seulement — la checkbox est affichée mais le cookie n'est jamais défini côté serveur. À implémenter si nécessaire.
+
+- **Rôles en minuscules** : La BDD et le code PHP utilisent tous les deux les minuscules (`enseignant`, `censeur`, `administrateur`). Ne jamais écrire `ENSEIGNANT` en majuscules dans les comparaisons PHP ni dans les ENUM SQL.
+
+- **`APP_ROOT`** : Défini comme `dirname(__DIR__)` dans `config/config.php` (qui est dans `/config/`). Donc `APP_ROOT` = racine du projet. Correct.
 
 ---
 
@@ -248,20 +303,16 @@ Pas de fichier `.env` — configuration dans `config/config.php` directement.
 
 ## 9. Prochaines étapes prioritaires
 
-Les tâches suivantes sont ordonnées par dépendance logique :
+Tous les modules métier planifiés sont livrés. Les prochaines étapes sont des améliorations :
 
-1. **Corriger le bug `implode`** dans `AuthController::register()` (séparateur `<br>` manquant) — 5 min
-2. **Implémenter "Se souvenir de moi"** dans `AuthController::login()` — définir le cookie 30j
-3. **Créer les tables métier** : `classe`, `matiere`, `cours` (cahier de texte) — nécessite discussion avec le propriétaire sur le modèle de données
-4. **Dashboard différencié par rôle** : afficher des cartes/modules différents selon `$user['role']`
-5. **Module enseignant** : saisie d'une entrée de cahier de texte (date, matière, classe, contenu du cours, devoirs)
-6. **Module élève/parent** : consultation du cahier de texte filtré par classe
-7. **Module censeur** : vue globale de tous les cahiers, supervision
-8. **Module administrateur** : gestion des utilisateurs (liste, activation, suppression)
-9. **Page modification de profil** : changer nom / email / mot de passe
-10. **Réinitialisation mot de passe** par email (nécessite configuration SMTP)
+1. **Génération PDF** — Rapport progression + présences via formulaire (classe, matière, période). Nécessite TCPDF ou DomPDF via Composer.
+2. **Réinitialisation mot de passe par email** — Lien de reset avec token, nécessite config SMTP (`php.ini` ou service tiers).
+3. **Mode hors-ligne PWA** — Service Worker + cache API pour saisie sans connexion, sync au retour.
+4. **Résumé IA des notes** — Appel API (OpenAI ou équivalent) sur `commentaire_enseignant` pour résumer.
+5. **Import élèves en masse** — Upload CSV/Excel pour inscrire plusieurs élèves d'un coup.
+6. **Convocations enseignants** — Génération et envoi de convocations depuis la supervision (table `convocation` déjà dans la BDD).
 
-**Dépendances :** 3 → 4 → 5 → 6 → 7. Les tâches 1, 2, 9 sont indépendantes.
+**État du projet :** MVP complet et fonctionnel. Toutes les fonctionnalités métier décrites dans la spécification initiale sont implémentées.
 
 ---
 
