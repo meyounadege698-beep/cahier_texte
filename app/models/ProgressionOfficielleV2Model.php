@@ -368,6 +368,28 @@ class ProgressionOfficielleV2Model
         $idMatiere = (int)$programme['id_matiere'];
         $annee     = $programme['annee_scolaire'];
 
+        $affectation = $this->db->prepare(
+            "SELECT 1
+             FROM affectation_enseignant
+             WHERE id_utilisateur = ?
+               AND id_classe = ?
+               AND id_matiere = ?
+               AND annee_scolaire = ?
+             LIMIT 1"
+        );
+        $affectation->bind_param("iiis", $idEnseignant, $idClasse, $idMatiere, $annee);
+        $affectation->execute();
+        $affectation->store_result();
+        $isAssigned = $affectation->num_rows > 0;
+        $affectation->close();
+
+        if (!$isAssigned) {
+            return [
+                'success' => false,
+                'message' => 'Cet enseignant n\'est pas affecté à cette classe et à cette matière pour l\'année scolaire sélectionnée.'
+            ];
+        }
+
         // Récupérer toutes les leçons du programme avec leurs semaines
         $stmt = $this->db->prepare(
             "SELECT l.id_leçon, l.titre_leçon,
@@ -515,7 +537,6 @@ class ProgressionOfficielleV2Model
             "SELECT DISTINCT u.id_utilisateur, u.nom, u.prenom, u.email,
                     c.id_classe, c.nom_classe, c.niveau,
                     ae.annee_scolaire,
-                    -- Vérifier si déjà attribué
                     (SELECT COUNT(*) FROM progression_programme pp
                      WHERE pp.id_utilisateur = u.id_utilisateur
                        AND pp.id_matiere = po.id_matiere
@@ -531,5 +552,30 @@ class ProgressionOfficielleV2Model
         $stmt->bind_param("i", $idProgramme);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function isEnseignantAffecteAuProgramme(int $idProgramme, int $idEnseignant, int $idClasse): bool
+    {
+        $programme = $this->getProgrammeById($idProgramme);
+        if (!$programme) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare(
+            "SELECT 1
+             FROM affectation_enseignant
+             WHERE id_utilisateur = ?
+               AND id_classe = ?
+               AND id_matiere = ?
+               AND annee_scolaire = ?
+             LIMIT 1"
+        );
+        $stmt->bind_param("iiis", $idEnseignant, $idClasse, (int)$programme['id_matiere'], $programme['annee_scolaire']);
+        $stmt->execute();
+        $stmt->store_result();
+        $ok = $stmt->num_rows > 0;
+        $stmt->close();
+
+        return $ok;
     }
 }

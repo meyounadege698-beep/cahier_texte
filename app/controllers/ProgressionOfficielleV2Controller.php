@@ -28,16 +28,10 @@ class ProgressionOfficielleV2Controller
 
     public function __construct()
     {
+        require_once APP_ROOT . '/core/Roles.php';
         require_once APP_ROOT . '/app/models/ProgressionOfficielleV2Model.php';
         $this->model = new ProgressionOfficielleV2Model();
-
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login'); exit();
-        }
-        if (Session::get('role') !== 'censeur') {
-            Session::setFlash('error', 'Accès réservé au censeur.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard'); exit();
-        }
+        Roles::requireCenseur();
     }
 
     // ── Liste des programmes ─────────────────────────────────

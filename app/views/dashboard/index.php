@@ -67,6 +67,12 @@ $role = Session::get('role');
         <div class="module-desc">Consultez les statistiques de présence par classe</div>
     </a>
 
+    <a href="<?= APP_URL ?>/app.php?page=ma-progression" class="module-card module-card--purple">
+        <div class="module-icon">📋</div>
+        <div class="module-name">Ma progression</div>
+        <div class="module-desc">Programmes officiels qui vous ont été attribués</div>
+    </a>
+
 </div>
 
 <!-- Infos profil -->
@@ -107,7 +113,7 @@ $role = Session::get('role');
         <div class="module-desc">Alertes, taux de couverture, validations</div>
     </a>
 
-    <a href="<?= APP_URL ?>/app.php?page=progression-officielle" class="module-card module-card--purple">
+    <a href="<?= APP_URL ?>/app.php?page=prog-officielle-v2" class="module-card module-card--purple">
         <div class="module-icon">📋</div>
         <div class="module-name">Progression officielle</div>
         <div class="module-desc">Saisir le programme national avant la rentrée</div>
@@ -173,23 +179,76 @@ $role = Session::get('role');
 
 <?php else: ?>
 <!-- ============================================================
-     DASHBOARD GÉNÉRIQUE (administrateur etc.)
+     DASHBOARD ADMINISTRATEUR — accès complet censeur + enseignant
 ============================================================ -->
-<div class="dashboard-grid">
+<div class="dash-role-title">Mon espace administrateur — Accès complet</div>
+
+<div class="dashboard-grid dashboard-grid--modules">
+    <a href="<?= APP_URL ?>/app.php?page=supervision" class="module-card module-card--primary">
+        <div class="module-icon">🔍</div>
+        <div class="module-name">Supervision</div>
+        <div class="module-desc">Alertes, taux de couverture, validations</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=prog-officielle-v2" class="module-card module-card--purple">
+        <div class="module-icon">📋</div>
+        <div class="module-name">Progression officielle</div>
+        <div class="module-desc">Programmes hebdomadaires par matière</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=gestion-enseignants" class="module-card module-card--green">
+        <div class="module-icon">👨‍🏫</div>
+        <div class="module-name">Enseignants</div>
+        <div class="module-desc">Comptes, mots de passe, activation</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=gestion-affectations" class="module-card module-card--orange">
+        <div class="module-icon">🏫</div>
+        <div class="module-name">Affectations & Salles</div>
+        <div class="module-desc">Classes, matières, salles par enseignant</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=gestion-classes" class="module-card">
+        <div class="module-icon">🎒</div>
+        <div class="module-name">Classes & Élèves</div>
+        <div class="module-desc">Gestion des classes et inscriptions</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=gestion-catalogue" class="module-card">
+        <div class="module-icon">📚</div>
+        <div class="module-name">Depts & Matières</div>
+        <div class="module-desc">Catalogue pédagogique</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=saisie-seance" class="module-card module-card--primary">
+        <div class="module-icon">✏️</div>
+        <div class="module-name">Saisir une séance</div>
+        <div class="module-desc">Cahier de texte numérique</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=ma-progression" class="module-card module-card--green">
+        <div class="module-icon">📊</div>
+        <div class="module-name">Ma progression</div>
+        <div class="module-desc">Programmes attribués</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=appel" class="module-card">
+        <div class="module-icon">📝</div>
+        <div class="module-name">Appel & Présence</div>
+        <div class="module-desc">Prise d'appel par séance</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=devoirs" class="module-card">
+        <div class="module-icon">📚</div>
+        <div class="module-name">Devoirs</div>
+        <div class="module-desc">Devoirs par séance</div>
+    </a>
+    <a href="<?= APP_URL ?>/app.php?page=bibliotheque-seances" class="module-card">
+        <div class="module-icon">📂</div>
+        <div class="module-name">Bibliothèque</div>
+        <div class="module-desc">Séances réutilisables</div>
+    </a>
+</div>
+
+<div class="dashboard-grid" style="margin-top:24px">
     <div class="card">
-        <div class="card-header">
-            <div class="card-icon">👤</div>
-            <div><div class="card-title">Mon profil</div></div>
-        </div>
+        <div class="card-header"><div class="card-icon">👤</div><div><div class="card-title">Mon profil</div></div></div>
         <ul class="info-list">
             <li><span class="info-label">📛 Nom</span>
                 <span class="info-value"><?= htmlspecialchars($user['nom'].' '.$user['prenom'], ENT_QUOTES, 'UTF-8') ?></span></li>
             <li><span class="info-label">✉️ Email</span>
                 <span class="info-value"><?= htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8') ?></span></li>
-            <li><span class="info-label">🏷️ Rôle</span>
-                <span class="info-value"><?= htmlspecialchars(ucfirst($user['role']), ENT_QUOTES, 'UTF-8') ?></span></li>
-            <li><span class="info-label">📅 Inscrit le</span>
-                <span class="info-value"><?= $user['date_inscription'] ? date('d/m/Y', strtotime($user['date_inscription'])) : '—' ?></span></li>
         </ul>
         <div class="card-actions" style="margin-top:16px">
             <a href="<?= APP_URL ?>/app.php?page=logout" class="btn btn-danger">🚪 Déconnexion</a>

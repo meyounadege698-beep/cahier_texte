@@ -11,11 +11,12 @@ class PresenceController
     {
         require_once APP_ROOT . '/app/models/PresenceModel.php';
         $this->model = new PresenceModel();
-
+        require_once APP_ROOT . '/core/Roles.php';
+        // Accès : enseignant, censeur ET administrateur
         if (!Session::isLoggedIn()) {
             header('Location: ' . APP_URL . '/app.php?page=login'); exit();
         }
-        if (!in_array(Session::get('role'), ['enseignant', 'censeur'])) {
+        if (!in_array(Session::get('role'), Roles::ALL_ROLES)) {
             Session::setFlash('error', 'Accès non autorisé.');
             header('Location: ' . APP_URL . '/app.php?page=dashboard'); exit();
         }
@@ -33,7 +34,7 @@ class PresenceController
         $seanceModel = new SeanceModel();
 
         // Censeur : toutes les classes. Enseignant : ses classes affectées.
-        if ($role === 'censeur') {
+        if (Roles::isCenseur()) {
             require_once APP_ROOT . '/app/models/EleveModel.php';
             $eleveModel = new EleveModel();
             $classes = $eleveModel->getAllClasses($seanceModel->getAnneeCourante());
@@ -111,7 +112,7 @@ class PresenceController
             : [];
 
         // Censeur voit toutes les classes, enseignant seulement ses classes
-        if (Session::get('role') === 'censeur') {
+        if (Roles::isCenseur()) {
             require_once APP_ROOT . '/app/models/EleveModel.php';
             $eleveModel = new EleveModel();
             $classes = $eleveModel->getAllClasses($annee);

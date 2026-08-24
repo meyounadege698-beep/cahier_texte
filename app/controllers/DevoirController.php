@@ -11,14 +11,8 @@ class DevoirController
     {
         require_once APP_ROOT . '/app/models/DevoirModel.php';
         $this->model = new DevoirModel();
-
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login'); exit();
-        }
-        if (Session::get('role') !== 'enseignant') {
-            Session::setFlash('error', 'Accès réservé aux enseignants.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard'); exit();
-        }
+        require_once APP_ROOT . '/core/Roles.php';
+        Roles::requireEnseignant();
     }
 
     // ── Liste des devoirs ────────────────────────────────────

@@ -16,6 +16,7 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/core/Database.php';
 require_once __DIR__ . '/core/Session.php';
 require_once __DIR__ . '/core/Router.php';
+require_once __DIR__ . '/core/Roles.php';
 
 Session::start();
 
@@ -96,6 +97,27 @@ $router->add('do-add-mat',         'CatalogueController', 'addMat');
 $router->add('do-edit-mat',        'CatalogueController', 'editMat');
 $router->add('do-delete-mat',      'CatalogueController', 'deleteMat');
 
+// Progression officielle V2 — wizard semaine/chapitre/leçon (censeur + admin)
+$router->add('prog-officielle-v2',               'ProgressionOfficielleV2Controller', 'index');
+$router->add('prog-officielle-v2-creer',         'ProgressionOfficielleV2Controller', 'creerForm');
+$router->add('do-prog-v2-creer',                 'ProgressionOfficielleV2Controller', 'creerProgramme');
+$router->add('prog-officielle-v2-wizard',        'ProgressionOfficielleV2Controller', 'wizard');
+$router->add('do-prog-v2-semaine',               'ProgressionOfficielleV2Controller', 'addSemaine');
+$router->add('do-prog-v2-chapitre',              'ProgressionOfficielleV2Controller', 'addChapitre');
+$router->add('do-prog-v2-lecon',                 'ProgressionOfficielleV2Controller', 'addLecon');
+$router->add('do-prog-v2-objectif',              'ProgressionOfficielleV2Controller', 'addObjectif');
+$router->add('do-prog-v2-del-semaine',           'ProgressionOfficielleV2Controller', 'deleteSemaine');
+$router->add('do-prog-v2-del-chapitre',          'ProgressionOfficielleV2Controller', 'deleteChapitre');
+$router->add('do-prog-v2-del-lecon',             'ProgressionOfficielleV2Controller', 'deleteLecon');
+$router->add('do-prog-v2-del-objectif',          'ProgressionOfficielleV2Controller', 'deleteObjectif');
+$router->add('do-prog-v2-publier',               'ProgressionOfficielleV2Controller', 'publier');
+$router->add('do-prog-v2-attribuer',             'ProgressionOfficielleV2Controller', 'attribuer');
+$router->add('prog-officielle-v2-json',          'ProgressionOfficielleV2Controller', 'jsonProgramme');
+
+// Progression enseignant (enseignant + admin)
+$router->add('ma-progression',                   'MaProgressionController', 'index');
+$router->add('ma-progression-detail',            'MaProgressionController', 'detail');
+
 // Progression officielle (censeur)
 $router->add('progression-officielle',              'ProgressionOfficielleController', 'index');
 $router->add('progression-officielle-create',       'ProgressionOfficielleController', 'createForm');
@@ -164,6 +186,28 @@ if ($page === 'login'    && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'add_mat')     $_GET['page'] = 'do-add-mat';
     if ($action === 'edit_mat')    $_GET['page'] = 'do-edit-mat';
     if ($action === 'delete_mat')  $_GET['page'] = 'do-delete-mat';
+} elseif ($page === 'prog-officielle-v2-creer' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-creer';
+} elseif ($page === 'prog-officielle-v2-semaine' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-semaine';
+} elseif ($page === 'prog-officielle-v2-chapitre' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-chapitre';
+} elseif ($page === 'prog-officielle-v2-lecon' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-lecon';
+} elseif ($page === 'prog-officielle-v2-objectif' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-objectif';
+} elseif ($page === 'prog-officielle-v2-del-semaine' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-del-semaine';
+} elseif ($page === 'prog-officielle-v2-del-chapitre' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-del-chapitre';
+} elseif ($page === 'prog-officielle-v2-del-lecon' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-del-lecon';
+} elseif ($page === 'prog-officielle-v2-del-objectif' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-del-objectif';
+} elseif ($page === 'prog-officielle-v2-publier' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-publier';
+} elseif ($page === 'prog-officielle-v2-attribuer' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-prog-v2-attribuer';
 } elseif ($page === 'progression-officielle-create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-progression-officielle-create';
 } elseif ($page === 'progression-officielle-detail' && $_SERVER['REQUEST_METHOD'] === 'POST') {

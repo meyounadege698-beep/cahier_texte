@@ -21,17 +21,8 @@ class ProgressionOfficielleController
     {
         require_once APP_ROOT . '/app/models/ProgressionOfficielleModel.php';
         $this->model = new ProgressionOfficielleModel();
-
-        // Seul le censeur peut accéder
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login');
-            exit();
-        }
-        if (Session::get('role') !== 'censeur') {
-            Session::setFlash('error', 'Accès réservé au censeur.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard');
-            exit();
-        }
+        require_once APP_ROOT . '/core/Roles.php';
+        Roles::requireCenseur();
     }
 
     // =========================================================

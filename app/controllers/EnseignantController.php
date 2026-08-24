@@ -18,16 +18,8 @@ class EnseignantController
     {
         require_once APP_ROOT . '/app/models/EnseignantModel.php';
         $this->model = new EnseignantModel();
-
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login');
-            exit();
-        }
-        if (Session::get('role') !== 'censeur') {
-            Session::setFlash('error', 'Accès réservé au censeur.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard');
-            exit();
-        }
+        require_once APP_ROOT . '/core/Roles.php';
+        Roles::requireCenseur();
     }
 
     // ── Page liste ───────────────────────────────────────────

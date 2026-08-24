@@ -11,14 +11,8 @@ class SupervisionController
     {
         require_once APP_ROOT . '/app/models/SupervisionModel.php';
         $this->model = new SupervisionModel();
-
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login'); exit();
-        }
-        if (Session::get('role') !== 'censeur') {
-            Session::setFlash('error', 'Accès réservé au censeur.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard'); exit();
-        }
+        require_once APP_ROOT . '/core/Roles.php';
+        Roles::requireCenseur();
     }
 
     public function index(): void

@@ -17,16 +17,8 @@ class BibliothequeController
         require_once APP_ROOT . '/app/models/SeanceModel.php';
         require_once APP_ROOT . '/core/Uploader.php';
         $this->model = new SeanceModel();
-
-        if (!Session::isLoggedIn()) {
-            header('Location: ' . APP_URL . '/app.php?page=login');
-            exit();
-        }
-        if (Session::get('role') !== 'enseignant') {
-            Session::setFlash('error', 'Accès réservé aux enseignants.');
-            header('Location: ' . APP_URL . '/app.php?page=dashboard');
-            exit();
-        }
+        require_once APP_ROOT . '/core/Roles.php';
+        Roles::requireEnseignant();
     }
 
     // =========================================================

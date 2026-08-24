@@ -1,6 +1,6 @@
 # AGENTS.md — Cahier de Texte Digital
 
-> Dernière mise à jour : 2026-08-19 v6 — par Kiro (modules présence, devoirs, supervision, dashboard différencié par rôle)
+> Dernière mise à jour : 2026-08-23 v7 — par Kiro (progression officielle v2 + wizard + accès admin universel)
 > Ce fichier est la source de vérité du contexte projet. Le lire intégralement avant toute action.
 
 ---
@@ -151,24 +151,19 @@ GET /?page=dashboard
 
 ### ✅ Fonctionnalités TERMINÉES
 
-- **Structure MVC** : Front Controller (`app.php`), Router, core (Database, Session, Router, Uploader)
+- **Structure MVC** : Front Controller (`app.php`), Router, core (Database, Session, Router, Uploader, **Roles**)
+- **Roles.php** : helper centralisé — `administrateur` a accès à TOUT (censeur + enseignant)
 - **Page d'accueil visiteur** : `index.php` racine, présentation complète du projet
 - **Authentification** : inscription, connexion, déconnexion, CSRF, bcrypt, `est_actif`, `derniere_connexion`, `prenom`
-- **Dashboard différencié par rôle** : enseignant (6 modules), censeur (8 modules), administrateur (générique)
-- **Module censeur — Enseignants** : inscription mdp par défaut/personnalisé/généré, affichage mdp unique, modifier, activer/désactiver, reset mdp, bouton affecter
-- **Module censeur — Affectations multiples** : formulaire dynamique N lignes (classe+matière+salle+volume), groupé par département
-- **Module censeur — Salles** : CRUD salles (type, capacité, localisation), protection si affectée
-- **Module censeur — Catalogue** : CRUD départements + matières via modals
-- **Module censeur — Progression officielle** : création programme, chapitres, publication
-- **Module censeur — Classes** : CRUD classes par année scolaire, compteur élèves, barre de remplissage
-- **Module censeur — Élèves** : inscription (matricule, sexe, date/lieu naissance, contact parent), modifier, activer/transférer
-- **Module censeur — Supervision** : KPIs (enseignants actifs, séances semaine, validations, programmes), alertes cahiers non remplis, taux couverture programme par enseignant/classe/matière, validations progressions (approuver/refuser), fil d'activité récente
-- **Module enseignant — Saisie séance** : classe/matière AJAX, points programme, ajout point manquant, upload pièces jointes, réutilisation, étape 5 upload
-- **Module enseignant — Bibliothèque** : liste séances, filtres, upload drag & drop, bouton Réutiliser
-- **Module enseignant — Appel & Présence** : prise d'appel par séance (Présent/Absent/Retard/Excusé), motif, sélection rapide tous présents/absents
-- **Module enseignant — Historique présences** : stats assiduité par élève (total séances, taux %, barre colorée)
-- **Module enseignant — Devoirs** : création (DM/DS/Éval/Projet), rattaché à une séance, note sur, coefficient, suppression
-- **Upload fichiers** : `core/Uploader.php` sécurisé, `/uploads/{id_user}/`, vérification MIME
+- **Dashboard différencié** : enseignant (7 modules), censeur (8 modules), **administrateur (11 modules = tout)**
+- **Progression officielle V2 (wizard)** : structure par semaine conforme Ministère Cameroun — dept → matière → année → titre → semaines avec dates → chapitres+compétences → leçons (type/grand titre/heures) → objectifs atomisés. Prévisualisation temps réel. Publication + attribution enseignant.
+- **Migration v3 appliquée** : `semaine_programme`, `objectif_lecon`, `objectif_atteint`, colonnes `type_lecon`/`grand_titre`/`nb_heures`
+- **Ma progression** : vue enseignant sur les programmes attribués, statut par leçon, objectifs
+- **Module censeur — Enseignants** : inscription mdp par défaut/personnalisé/généré, reset mdp
+- **Module censeur — Affectations multiples** : N lignes (classe+matière+salle+volume)
+- **Module censeur — Salles, Catalogue, Classes, Élèves, Supervision** : tous livrés
+- **Module enseignant — Saisie séance, Bibliothèque, Appel, Présence, Devoirs** : tous livrés
+- **Upload fichiers** : `core/Uploader.php` sécurisé, vérification MIME
 
 ### 🚧 Fonctionnalités EN COURS
 
