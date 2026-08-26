@@ -73,6 +73,12 @@ $role = Session::get('role');
         <div class="module-desc">Programmes officiels qui vous ont été attribués</div>
     </a>
 
+    <a href="<?= APP_URL ?>/app.php?page=mes-convocations" class="module-card">
+        <div class="module-icon">📨</div>
+        <div class="module-name">Mes convocations</div>
+        <div class="module-desc">Consultez les convocations reçues de la direction</div>
+    </a>
+
 </div>
 
 <!-- Infos profil -->
@@ -154,6 +160,12 @@ $role = Session::get('role');
         <div class="module-icon">🗝️</div>
         <div class="module-name">Salles</div>
         <div class="module-desc">Gérer les salles de classe</div>
+    </a>
+
+    <a href="<?= APP_URL ?>/app.php?page=convocations" class="module-card">
+        <div class="module-icon">📨</div>
+        <div class="module-name">Convocations</div>
+        <div class="module-desc">Envoyer des convocations aux enseignants</div>
     </a>
 
 </div>

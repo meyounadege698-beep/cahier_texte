@@ -202,6 +202,26 @@ $selectedMatiere  = (int)($_GET['matiere'] ?? $old['id_matiere'] ?? 0);
                     <textarea id="commentaire_enseignant" name="commentaire_enseignant" rows="2"
                               placeholder="Difficultés rencontrées, remarques..."><?= htmlspecialchars($old['commentaire_enseignant'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
+
+                <!-- Bouton résumé IA -->
+                <div class="ia-resume-zone">
+                    <button type="button" class="btn-ia" id="btnIaResume" onclick="genererResumeIA()">
+                        ✨ Résumer avec l'IA
+                    </button>
+                    <div id="ia-loading" style="display:none" class="ia-loading">
+                        <span class="ia-spinner"></span> Génération en cours...
+                    </div>
+                    <div id="ia-result" class="ia-result" style="display:none">
+                        <div class="ia-result-header">
+                            <span>✨ Résumé généré par l'IA</span>
+                            <button type="button" class="ia-use-btn" onclick="utiliserResumeIA()">
+                                ↑ Insérer dans les notes
+                            </button>
+                        </div>
+                        <div id="ia-result-text" class="ia-result-text"></div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- ── ÉTAPE 5 : Pièces jointes ── -->

@@ -28,9 +28,7 @@ class ApiController
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($matieres);
         exit();
-    }
-
-    /**
+    }    /**
      * GET app.php?page=api-matieres-classe&classe=X
      * Matières affectées à l'enseignant connecté pour une classe.
      */
@@ -64,3 +62,65 @@ class ApiController
         exit();
     }
 }
+
+    /**
+     * POST app.php?page=api-ia-resume
+     * Génère un résumé IA d'une séance.
+     */
+    public function iaResume(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'error' => 'Méthode invalide.']);
+            exit();
+        }
+
+        $token = trim($_POST['csrf_token'] ?? '');
+        if (!Session::verifyCsrf($token)) {
+            echo json_encode(['success' => false, 'error' => 'Token invalide.']);
+            exit();
+        }
+
+        require_once APP_ROOT . '/core/AiService.php';
+        $ai = new AiService();
+
+        $contenu     = trim($_POST['contenu']    ?? '');
+        $objectifs   = trim($_POST['objectifs']  ?? '');
+        $commentaire = trim($_POST['commentaire']?? '');
+
+        if (empty($contenu)) {
+            echo json_encode(['success' => false, 'error' => 'Contenu vide.']);
+            exit();
+        }
+
+        $result = $ai->resumeSeance($contenu, $objectifs, $commentaire);
+        echo json_encode($result);
+        exit();
+    }
+
+    /**
+     * POST app.php?page=api-ia-objectifs
+     * Suggère des objectifs pédagogiques pour une leçon.
+     */
+    public function iaObjectifs(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $token = trim($_POST['csrf_token'] ?? '');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !Session::verifyCsrf($token)) {
+            echo json_encode(['success' => false, 'error' => 'Token invalide.']);
+            exit();
+        }
+
+        require_once APP_ROOT . '/core/AiService.php';
+        $ai = new AiService();
+
+        $result = $ai->suggererObjectifs(
+            trim($_POST['titre_lecon']  ?? ''),
+            trim($_POST['grand_titre']  ?? ''),
+            trim($_POST['matiere']      ?? '')
+        );
+        echo json_encode($result);
+        exit();
+    }

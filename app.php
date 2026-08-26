@@ -33,9 +33,22 @@ $router->add('logout',      'AuthController', 'logout');
 $router->add('api-matieres',          'ApiController', 'getMatieres');
 $router->add('api-matieres-classe',   'ApiController', 'getMatieresClasse');
 $router->add('api-points-programme',  'ApiController', 'getPointsProgramme');
+$router->add('api-ia-resume',         'ApiController', 'iaResume');
+$router->add('api-ia-objectifs',      'ApiController', 'iaObjectifs');
 
 // Application
 $router->add('dashboard',             'DashboardController', 'index');
+
+// Rapports PDF (censeur + admin)
+$router->add('rapports',       'RapportController', 'index');
+$router->add('rapport-print',  'RapportController', 'print');
+
+// Convocations (censeur/admin → envoyer ; enseignant → consulter)
+$router->add('convocations',           'ConvocationController', 'index');
+$router->add('do-envoyer-convocation', 'ConvocationController', 'envoyer');
+$router->add('do-supprimer-convocation','ConvocationController','supprimer');
+$router->add('mes-convocations',       'ConvocationController', 'mesConvocations');
+$router->add('do-acquitter-convocation','ConvocationController','acquitter');
 
 // Présence & appel (enseignant + censeur)
 $router->add('appel',                'PresenceController', 'form');
@@ -135,6 +148,11 @@ if ($page === 'login'    && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-login';
 } elseif ($page === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-register';
+} elseif ($page === 'convocations' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['form_action'] ?? 'envoyer';
+    $_GET['page'] = 'do-envoyer-convocation';
+} elseif ($page === 'mes-convocations' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET['page'] = 'do-acquitter-convocation';
 } elseif ($page === 'appel' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_GET['page'] = 'do-save-appel';
 } elseif ($page === 'devoirs' && $_SERVER['REQUEST_METHOD'] === 'POST') {
